@@ -19,4 +19,11 @@ class WalletException extends Exception
             "Failed adding funds to wallet. Try again later."
         );
     }
+
+    public static function invalidAmount(): static
+    {
+        return new static(
+            "Invalid amount provided. Amount must be positive number."
+        );
+    }
 }

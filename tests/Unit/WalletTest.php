@@ -33,6 +33,18 @@ class WalletTest extends TestCase
     }
 
     /** @test */
+    public function when_no_wallet_name_is_provided_it_creates_wallet_with_unique_id()
+    {
+        $wallet = $this->user->createWallet('eur');
+
+        // For better testing, wallet name should be mocked,
+        // so we can provide specific value to test for,
+        // then we could use ->assertEquals(... on it.
+        // When no name is provided, it won't be null.
+        $this->assertIsString($wallet->name);
+    }
+
+    /** @test */
     public function it_should_be_able_to_create_multiple_wallets_that_each_have_its_own_currency()
     {
         $this->user->createWallet('eur');

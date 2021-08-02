@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Events\FundsAddedToWallet;
+use App\Exceptions\WalletException;
+use App\Listeners\CreateTransaction;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class WalletTest extends TestCase
@@ -43,5 +46,26 @@ class WalletTest extends TestCase
 
         $this->assertEquals($amount + 500, $wallet->amount);
         $this->assertCount(2, $wallet->fresh()->transactions);
+    }
+
+    /** @test */
+    public function negative_amount_cannot_be_deposited()
+    {
+        $wallet = $this->user->createWallet('eur');
+        $this->expectException(WalletException::class);
+        $this->expectExceptionMessage(WalletException::invalidAmount()->getMessage());
+
+        $wallet->deposit(-20);
+    }
+
+    /** @test */
+    public function events_are_fired_and_listened_to_for_adding_funds_to_wallet()
+    {
+        Event::fake();
+        Event::assertListening(FundsAddedToWallet::class, CreateTransaction::class);
+        $wallet = $this->user->createWallet('eur');
+
+        $wallet->deposit(10);
+        Event::assertDispatched(FundsAddedToWallet::class);
     }
 }

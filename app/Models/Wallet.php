@@ -37,6 +37,10 @@ class Wallet extends Model
      */
     public function deposit(int $amount): bool
     {
+        if ($amount <= 0) {
+            throw WalletException::invalidAmount();
+        }
+
         $result = $this->update([
             'amount' => $this->amount + $amount
         ]);

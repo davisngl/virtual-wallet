@@ -77,4 +77,26 @@ class WalletTest extends TestCase
     {
         $this->assertNull($this->user->getWallet('non-existent'));
     }
+
+    /** @test */
+    public function it_shows_sufficient_funds_when_a_valid_and_amount_in_boundaries_is_given()
+    {
+        $wallet = $this->user->createWallet('eur');
+        $wallet->deposit(1000);
+
+        $this->assertTrue($wallet->hasSufficientFunds(1000));
+        $this->assertTrue($wallet->hasSufficientFunds(900));
+        $this->assertFalse($wallet->hasSufficientFunds(1300));
+    }
+
+    /** @test */
+    public function it_validates_amounts_correctly_that_can_be_withdrawn()
+    {
+        $wallet = $this->user->createWallet('eur');
+        $wallet->deposit(1000);
+
+        $this->assertTrue($wallet->canBeWithdrawn(1000));
+        $this->assertFalse($wallet->canBeWithdrawn(0));
+        $this->assertFalse($wallet->canBeWithdrawn(-400));
+    }
 }

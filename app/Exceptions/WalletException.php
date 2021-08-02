@@ -20,10 +20,24 @@ class WalletException extends Exception
         );
     }
 
+    public static function failedWithdrawingFunds(): static
+    {
+        return new static(
+            "Failed withdrawing funds from wallet. Try again later."
+        );
+    }
+
     public static function invalidAmount(): static
     {
         return new static(
             "Invalid amount provided. Amount must be positive number."
+        );
+    }
+
+    public static function insufficientFunds(): static
+    {
+        return new static(
+            "Wallet has insufficient funds. Before trying again, make sure wallet has sufficient funds to make desired withdraw."
         );
     }
 }

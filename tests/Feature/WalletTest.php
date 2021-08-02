@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Events\FundsAddedToWallet;
+use App\Events\FundsWithdrawnFromWallet;
 use App\Exceptions\WalletException;
 use App\Listeners\CreateTransaction;
 use App\Models\Transaction;
@@ -67,5 +68,38 @@ class WalletTest extends TestCase
 
         $wallet->deposit(10);
         Event::assertDispatched(FundsAddedToWallet::class);
+    }
+
+    /** @test */
+    public function when_withdrawal_to_wallet_is_made_wallet_amount_is_updated_and_transaction_is_created()
+    {
+        $wallet = $this->user->createWallet('eur');
+        // Setting initial amount
+        $wallet->deposit(1000);
+
+        $wallet->withdraw($latestAmount = 800);
+
+        $this->assertEquals(200, $wallet->amount);
+        $this->assertCount(2, $wallet->transactions);
+
+        // I don't want to put sleep to have predictability on which *latest* transaction will be returned,
+        // since timestamps are identical and deposit+withdraw happening in the same instant
+        // would be anomaly & impractical.
+        $transaction = $wallet->transactions()->firstWhere('type', Transaction::TYPE_WITHDRAW);
+
+        $this->assertEquals($latestAmount, $transaction->amount);
+        $this->assertEquals(Transaction::TYPE_WITHDRAW, $transaction->type);
+    }
+
+    /** @test */
+    public function events_are_fired_and_listened_to_for_withdrawing_funds_from_wallet()
+    {
+        Event::fake();
+        Event::assertListening(FundsWithdrawnFromWallet::class, CreateTransaction::class);
+        $wallet = $this->user->createWallet('eur');
+        $wallet->deposit(10);
+
+        $wallet->withdraw(10);
+        Event::assertDispatched(FundsWithdrawnFromWallet::class);
     }
 }

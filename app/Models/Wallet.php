@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\FundsAddedToWallet;
 use App\Exceptions\WalletException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,11 @@ class Wallet extends Model
             throw WalletException::failedAddingFunds();
         }
 
+        event(new FundsAddedToWallet($this, Transaction::TYPE_DEPOSIT, $amount));
+
+        // Just to clarify why I return just "true":
+        // method has only 2 options - throw exception or return true
+        // from "update" method, therefore it makes sense to just return "true".
         return true;
     }
 }

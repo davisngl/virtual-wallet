@@ -19,7 +19,7 @@ class CreateTransactionsTable extends Migration
             $table->foreignId('wallet_id')->constrained()->cascadeOnDelete();
             $table->unsignedBigInteger('amount');
             $table->enum('type', [Transaction::$availableTypes]);
-            $table->enum('verdict', [Transaction::$availableVerdicts]);
+            $table->enum('verdict', [Transaction::$availableVerdicts])->default(Transaction::VERDICT_VALIDATING);
             $table->timestamps();
         });
     }

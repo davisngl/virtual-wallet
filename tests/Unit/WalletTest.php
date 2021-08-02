@@ -59,4 +59,10 @@ class WalletTest extends TestCase
 
         $this->assertEquals($wallet->toArray(), $this->user->getWallet($currency)->toArray());
     }
+
+    /** @test */
+    public function it_returns_null_when_requested_currency_wallet_is_not_found()
+    {
+        $this->assertNull($this->user->getWallet('non-existent'));
+    }
 }

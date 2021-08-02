@@ -12,4 +12,11 @@ class WalletException extends Exception
             "Wallet with {$currency} already exists. You cannot create another wallet with the same currency."
         );
     }
+
+    public static function failedAddingFunds(): static
+    {
+        return new static(
+            "Failed adding funds to wallet. Try again later."
+        );
+    }
 }

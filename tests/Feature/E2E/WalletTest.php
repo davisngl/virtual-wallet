@@ -6,7 +6,6 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class WalletTest extends TestCase
@@ -165,17 +164,19 @@ class WalletTest extends TestCase
     {
         $wallet = $this->user->createWallet('usd');
 
-        while ($wallet->transactions()->count() < 20) {
-            $method = Arr::random(['deposit', 'withdraw']);
+        $wallet->deposit(1000);
+        $wallet->deposit(400);
 
-            $wallet->{$method}(
-                $method === Transaction::TYPE_DEPOSIT ? random_int(1000, 9999) : random_int(1, 500)
-            );
-        }
+        $wallet->withdraw(300);
+        $wallet->withdraw(100);
+        $wallet->withdraw(200);
 
         $this->get(route('wallet.statements', ['wallet' => $wallet->id]))
             ->assertSuccessful()
-            ->assertSee("Total in-coming:");
+            ->assertSee([
+                'Total in-coming: 1400',
+                'Total out-going: 600',
+            ]);
     }
 
     /** @test */

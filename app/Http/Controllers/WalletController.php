@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\View\View;
+
+class WalletController extends Controller
+{
+    public function index(): View
+    {
+        return view('wallet.index', [
+            'wallets' => auth()->user()->wallets
+        ]);
+    }
+
+    public function create(): View
+    {
+        return view('wallet.create');
+    }
+
+    public function store(StoreWalletRequest $request): View
+    {
+        // TODO implement...
+
+        return view('wallet.index', [
+            'wallets' => auth()->user()->wallets
+        ]);
+    }
+}

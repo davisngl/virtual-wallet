@@ -94,7 +94,6 @@ class WalletTest extends TestCase
     /** @test */
     public function it_can_successfully_mark_transaction_as_fraudulent()
     {
-        $this->withoutExceptionHandling();
         $wallet = $this->user->createWallet('eur');
         $wallet->deposit(99);
 

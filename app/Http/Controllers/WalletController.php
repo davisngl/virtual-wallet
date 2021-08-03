@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWalletRequest;
+use App\Models\Wallet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -27,5 +28,12 @@ class WalletController extends Controller
         session()->flash('success', 'Wallet successfully created!');
 
         return redirect(route('wallet.index'));
+    }
+
+    public function destroy(Wallet $wallet): RedirectResponse
+    {
+        $wallet->delete();
+
+        return redirect(route('dashboard'));
     }
 }

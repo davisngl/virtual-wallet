@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth'])->group(function () {
-    Route::view('/', 'dashboard')->name('dashboard');
+    Route::get('/', HomeController::class)->name('dashboard');
 
     // Wallets
     Route::get('wallets', [WalletController::class, 'index'])->name('wallet.index');

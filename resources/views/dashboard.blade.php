@@ -22,8 +22,15 @@
                         <div class="w-1/4 py-2 px-5 border-blue-800 bg-blue-200">
                             <p class="text-2xl font-bold pb-5">Transactions</p>
                             <ul class="actions list-disc px-5">
-                                <li><a href="#" class="hover:underline">"EUR" wallet transaction list</a></li>
-                                <li><a href="#" class="hover:underline">"USD" wallet transaction list</a></li>
+                                @forelse($wallets as $wallet)
+                                    <li>
+                                        <a href="{{ route('transaction.index', ['wallet' => $wallet->id]) }}" class="hover:underline">
+                                            "{{ strtoupper($wallet->currency) }}" wallet transaction list
+                                        </a>
+                                    </li>
+                                @empty
+                                    No wallets created to have any transactions. Create one wallet first.
+                                @endforelse
                             </ul>
                         </div>
 

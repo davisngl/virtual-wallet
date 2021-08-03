@@ -30,6 +30,14 @@
                                 <div class="wallet-actions">
                                     <ul class="list-disc">
                                         <li><a href="{{ route('transaction.index', ['wallet' => $wallet->id]) }}" class="hover:underline">View transactions</a></li>
+                                        <form action="{{ route('wallet.destroy', ['wallet' => $wallet->id]) }}" method="post">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <li>
+                                                <button type="submit" class="hover:underline">Delete</button>
+                                            </li>
+                                        </form>
                                     </ul>
                                 </div>
                             </div>

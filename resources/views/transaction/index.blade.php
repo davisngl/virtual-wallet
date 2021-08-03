@@ -16,7 +16,7 @@
                     @endif
 
                         <div class="wallets flex flex-col mb-5">
-                        @forelse($transactions as $transaction)
+                        @forelse($wallet->transactions as $transaction)
                                 <div class="transaction-info flex flex-row justify-between w-full py-2 px-5 mb-5 {{ $transaction->fraudulent() ? 'bg-red-200' : 'bg-green-200' }}">
                                 <div class="transaction-info">
                                     <div class="w-full flex flex-row space-x-5">

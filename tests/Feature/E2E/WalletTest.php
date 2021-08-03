@@ -5,6 +5,7 @@ namespace Tests\Feature\E2E;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class WalletTest extends TestCase
@@ -103,14 +104,64 @@ class WalletTest extends TestCase
             'transaction' => $transaction->id,
         ];
 
-        $this->followingRedirects()->patch(
-            route('transaction.verdict', $routeParams),
-            ['verdict' => Transaction::VERDICT_FRAUDULENT]
-        )
+        $this->followingRedirects()
+            ->patch(
+                route('transaction.verdict', $routeParams),
+                ['verdict' => Transaction::VERDICT_FRAUDULENT]
+            )
             ->assertSessionDoesntHaveErrors()
             ->assertDontSee('Mark as fraudulent')
             ->assertSee('Verdict: Fraudulent');
 
         $this->assertTrue($transaction->fresh()->fraudulent());
+    }
+
+    /** @test */
+    public function it_shows_transaction_creation_form()
+    {
+        $wallet = $this->user->createWallet('eur');
+
+        $this->get(route('transaction.create', ['wallet' => $wallet->id]))
+            ->assertSuccessful()
+            ->assertSee('Create a Transaction');
+    }
+
+    /** @test */
+    public function it_can_successfully_create_appropriate_transaction_for_wallet()
+    {
+        $wallet = $this->user->createWallet('eur');
+        $formData = [
+            'amount' => $amount = 400,
+            'type'   => Transaction::TYPE_DEPOSIT,
+        ];
+
+        $this->followingRedirects()
+            ->post(route('transaction.store', ['wallet' => $wallet->id]), $formData)
+            ->assertSessionHasNoErrors()
+            ->assertSee([
+                "Amount: {$amount}",
+                "Type: Deposit",
+            ]);
+
+        $this->assertCount(1, $wallet->transactions);
+        $this->assertEquals($amount, Transaction::firstWhere('wallet_id', $wallet->id)->amount);
+    }
+
+    /** @test */
+    public function wallet_statements_page_displays_all_transactions()
+    {
+        $wallet = $this->user->createWallet('usd');
+
+        while ($wallet->transactions()->count() < 20) {
+            $method = Arr::random(['deposit', 'withdraw']);
+
+            $wallet->{$method}(
+                $method === Transaction::TYPE_DEPOSIT ? random_int(1000, 9999) : random_int(1, 1000)
+            );
+        }
+
+        $this->get(route('wallet.statements', ['wallet' => $wallet->id]))
+            ->assertSuccessful()
+            ->assertSee("Total in-going amount:");
     }
 }

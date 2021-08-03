@@ -38,6 +38,7 @@
                                                 <button type="submit" class="hover:underline">Delete</button>
                                             </li>
                                         </form>
+                                        <li><a href="{{ route('wallet.edit', ['wallet' => $wallet->id]) }}">Edit</a></li>
                                     </ul>
                                 </div>
                             </div>

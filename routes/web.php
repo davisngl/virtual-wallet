@@ -20,10 +20,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/', HomeController::class)->name('dashboard');
 
     // Wallets
-    Route::get('wallets', [WalletController::class, 'index'])->name('wallet.index');
-    Route::get('wallets/create', [WalletController::class, 'create'])->name('wallet.create');
-    Route::post('wallets', [WalletController::class, 'store'])->name('wallet.store');
-    Route::delete('wallets/{wallet}', [WalletController::class, 'destroy'])->name('wallet.destroy');
+    Route::prefix('wallets')->group(function () {
+        Route::get('/', [WalletController::class, 'index'])->name('wallet.index');
+        Route::get('create', [WalletController::class, 'create'])->name('wallet.create');
+        Route::post('/', [WalletController::class, 'store'])->name('wallet.store');
+        Route::get('{wallet}', [WalletController::class, 'edit'])->name('wallet.edit');
+        Route::post('{wallet}', [WalletController::class, 'update'])->name('wallet.update');
+        Route::delete('{wallet}', [WalletController::class, 'destroy'])->name('wallet.destroy');
+    });
+
+    // Statements (incoming & outgoing transaction data related pages)
+    Route::get('wallets/{wallet}/statements', [WalletController::class, 'statements'])->name('wallet.statements');
 
     // Transactions
     Route::get('wallets/{wallet}/transactions', [TransactionController::class, 'index'])->name('transaction.index');

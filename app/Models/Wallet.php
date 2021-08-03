@@ -30,7 +30,7 @@ class Wallet extends Model
 
     public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class)->latest();
     }
 
     /**
@@ -42,7 +42,7 @@ class Wallet extends Model
             throw WalletException::invalidAmount();
         }
 
-        $result = $this->update([
+        $result = tap($this)->update([
             'amount' => $this->amount + $amount
         ]);
 
@@ -52,7 +52,7 @@ class Wallet extends Model
             throw WalletException::failedAddingFunds();
         }
 
-        event(new FundsAddedToWallet($this, Transaction::TYPE_DEPOSIT, $amount));
+        event(new FundsAddedToWallet($result, Transaction::TYPE_DEPOSIT, $amount));
 
         // Just to clarify why I return just "true":
         // method has only 2 options - throw exception or return true
@@ -69,7 +69,7 @@ class Wallet extends Model
             throw WalletException::insufficientFunds();
         }
 
-        $result = $this->update([
+        $result = tap($this)->update([
             'amount' => $this->amount - $amount
         ]);
 
@@ -79,7 +79,7 @@ class Wallet extends Model
             throw WalletException::failedWithdrawingFunds();
         }
 
-        event(new FundsWithdrawnFromWallet($this, Transaction::TYPE_WITHDRAW, $amount));
+        event(new FundsWithdrawnFromWallet($result, Transaction::TYPE_WITHDRAW, $amount));
 
         return true;
     }

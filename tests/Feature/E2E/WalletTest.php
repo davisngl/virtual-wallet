@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\E2E;
 
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -75,5 +76,42 @@ class WalletTest extends TestCase
                 'Currency: EUR',
                 'Type: Deposit',
             ]);
+    }
+
+    /** @test */
+    public function it_can_successfully_delete_a_transaction()
+    {
+        $wallet = $this->user->createWallet('eur');
+        $wallet->deposit(99);
+
+        $this->delete(route('transaction.destroy', [
+            'wallet'      => $wallet->id,
+            'transaction' => $wallet->transactions()->latest()->first()->id,
+        ]))
+            ->assertRedirect(route('transaction.index', ['wallet' => $wallet->id]));
+    }
+
+    /** @test */
+    public function it_can_successfully_mark_transaction_as_fraudulent()
+    {
+        $this->withoutExceptionHandling();
+        $wallet = $this->user->createWallet('eur');
+        $wallet->deposit(99);
+
+        $transaction = $wallet->transactions()->latest()->first();
+
+        $routeParams = [
+            'transaction' => $transaction->id,
+        ];
+
+        $this->followingRedirects()->patch(
+            route('transaction.verdict', $routeParams),
+            ['verdict' => Transaction::VERDICT_FRAUDULENT]
+        )
+            ->assertSessionDoesntHaveErrors()
+            ->assertDontSee('Mark as fraudulent')
+            ->assertSee('Verdict: Fraudulent');
+
+        $this->assertTrue($transaction->fresh()->fraudulent());
     }
 }

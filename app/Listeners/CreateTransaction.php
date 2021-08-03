@@ -18,8 +18,9 @@ class CreateTransaction
         $wallet = $event->wallet;
 
         $wallet->transactions()->create([
-            'amount' => $event->amount,
-            'type'   => $event->type,
+            'amount'   => $event->amount,
+            'currency' => $wallet->currency,
+            'type'     => $event->type,
         ]);
     }
 }

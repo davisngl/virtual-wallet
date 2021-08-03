@@ -28,7 +28,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('wallets/{wallet}/transactions', [TransactionController::class, 'index'])->name('transaction.index');
     Route::get('wallets/{wallet}/transactions/create', [TransactionController::class, 'create'])->name('transaction.create');
     Route::post('wallets/{wallet}/transactions', [TransactionController::class, 'store'])->name('transaction.store');
-    Route::delete('wallets/{wallet}/transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
+    Route::patch('transactions/{transaction}/mark', [TransactionController::class, 'mark'])->name('transaction.verdict');
+    Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->name('transaction.destroy');
 });
 
 require __DIR__ . '/auth.php';

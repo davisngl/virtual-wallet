@@ -15,11 +15,13 @@ class Transaction extends Model
     use HasFactory;
 
     protected $casts = [
-        'amount' => 'int',
+        'amount'    => 'int',
+        'wallet_id' => 'int',
     ];
 
     protected $fillable = [
         'amount',
+        'currency',
         'type',
         'verdict',
     ];
@@ -34,18 +36,12 @@ class Transaction extends Model
      */
     const VERDICT_FRAUDULENT = 'fraudulent';
 
-    /**
-     * Constitutes a transaction still being validated for fraud.
-     */
-    const VERDICT_VALIDATING = 'validating';
-
     public static array $availableTypes = [
         self::TYPE_DEPOSIT,
         self::TYPE_WITHDRAW,
     ];
 
     public static array $availableVerdicts = [
-        self::VERDICT_VALIDATING,
         self::VERDICT_OK,
         self::VERDICT_FRAUDULENT,
     ];
@@ -82,5 +78,15 @@ class Transaction extends Model
         return $this->update([
             'verdict' => self::VERDICT_FRAUDULENT
         ]);
+    }
+
+    public function fraudulent(): bool
+    {
+        return $this->verdict === self::VERDICT_FRAUDULENT;
+    }
+
+    public function ok(): bool
+    {
+        return $this->verdict === self::VERDICT_OK;
     }
 }

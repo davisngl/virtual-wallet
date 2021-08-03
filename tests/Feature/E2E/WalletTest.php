@@ -4,6 +4,7 @@ namespace Tests\Feature\E2E;
 
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Tests\TestCase;
@@ -19,6 +20,18 @@ class WalletTest extends TestCase
         parent::setUp();
 
         $this->actingAs($this->user = User::factory()->create());
+    }
+
+    /** @test */
+    public function unauthenticated_user_cannot_access_dashboard()
+    {
+        // If dashboard cannot be access, nothing of value & in business logic
+        // cannot be access by guest.
+        auth()->logout();
+
+        $this->assertGuest();
+        $this->get(route('dashboard'))
+            ->assertRedirect(route('login'));
     }
 
     /** @test */
@@ -156,12 +169,29 @@ class WalletTest extends TestCase
             $method = Arr::random(['deposit', 'withdraw']);
 
             $wallet->{$method}(
-                $method === Transaction::TYPE_DEPOSIT ? random_int(1000, 9999) : random_int(1, 1000)
+                $method === Transaction::TYPE_DEPOSIT ? random_int(1000, 9999) : random_int(1, 500)
             );
         }
 
         $this->get(route('wallet.statements', ['wallet' => $wallet->id]))
             ->assertSuccessful()
-            ->assertSee("Total in-going amount:");
+            ->assertSee("Total in-coming:");
+    }
+
+    /** @test */
+    public function wallet_can_be_renamed()
+    {
+        $wallet = $this->user->createWallet('usd', $initialName = 'Cool wallet');
+
+        $this->assertEquals($initialName, Wallet::first()->name);
+
+        $this->followingRedirects()
+            ->post(route('wallet.update', ['wallet' => $wallet]), [
+                'name' => $updatedName = 'Much cooler wallet',
+            ])
+            ->assertSuccessful()
+            ->assertSee($updatedName);
+
+        $this->assertEquals($updatedName, $wallet->fresh()->name);
     }
 }

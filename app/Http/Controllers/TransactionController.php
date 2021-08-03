@@ -28,6 +28,8 @@ class TransactionController extends Controller
     {
         $wallet->{$request->get('type')}($request->get('amount'));
 
+        session()->flash('success', 'Transaction successfully created!');
+
         return redirect(route('transaction.index', ['wallet' => $wallet->id]));
     }
 
@@ -44,6 +46,8 @@ class TransactionController extends Controller
     public function mark(MarkTransactionRequest $request, Transaction $transaction): RedirectResponse
     {
         $transaction->markAsFraudulent();
+
+        session()->flash('success', 'Transaction marked as fraudulent successfully!');
 
         return redirect(route('transaction.index', ['wallet' => $transaction->wallet_id]));
     }

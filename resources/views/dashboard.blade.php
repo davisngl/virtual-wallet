@@ -25,7 +25,7 @@
                                 @forelse($wallets as $wallet)
                                     <li>
                                         <a href="{{ route('transaction.index', ['wallet' => $wallet->id]) }}" class="hover:underline">
-                                            "{{ strtoupper($wallet->currency) }}" wallet transaction list
+                                            {{ $wallet->name }} ({{ strtoupper($wallet->currency) }}) wallet transaction list
                                         </a>
                                     </li>
                                 @empty
@@ -40,7 +40,7 @@
                                 @forelse($wallets as $wallet)
                                     <li>
                                         <a href="{{ route('wallet.statements', ['wallet' => $wallet->id]) }}" class="hover:underline">
-                                            "{{ strtoupper($wallet->currency) }}" wallet transaction statement
+                                            {{ $wallet->name }} ({{ strtoupper($wallet->currency) }}) transaction statement
                                         </a>
                                     </li>
                                 @empty

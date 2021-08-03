@@ -86,7 +86,7 @@ class Wallet extends Model
 
     public function canBeWithdrawn(int $amount): bool
     {
-        return $amount > 0 && $this->hasSufficientFunds($amount);
+        return $amount > 0 && $this->fresh()->hasSufficientFunds($amount);
     }
 
     public function hasSufficientFunds(int $amount): bool

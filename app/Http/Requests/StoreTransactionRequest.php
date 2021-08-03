@@ -29,7 +29,7 @@ class StoreTransactionRequest extends FormRequest
 
         return [
             'type'     => "required|in:{$availableTypes}",
-            'amount'   => ['required', 'int', 'min:1', new HasSufficientFunds(wallet: $this->route('wallet'), type: $this->type)],
+            'amount'   => ['required', 'int', 'min:1', 'max:999999999', new HasSufficientFunds(wallet: $this->route('wallet'), type: $this->type)],
         ];
     }
 }

@@ -42,11 +42,11 @@
                     </div>
                     <div class="summary flex space-x-5">
                         <div class="incoming w-1/2">
-                            Total in-coming: {{ $totalIncoming }} {{ $currency }}
+                            Total in-coming: {{ $totalIncoming }} {{ strtoupper($currency) }}
                         </div>
 
                         <div class="outgoing w-1/2">
-                            Total out-going: {{ $totalOutgoing }} {{ $currency }}
+                            Total out-going: {{ $totalOutgoing }} {{ strtoupper($currency) }}
                         </div>
                     </div>
 

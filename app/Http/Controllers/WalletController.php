@@ -35,7 +35,9 @@ class WalletController extends Controller
     {
         $wallet->delete();
 
-        return redirect(route('dashboard'));
+        session()->flash('success', 'Wallet deleted successfully!');
+
+        return redirect(route('wallet.index'));
     }
 
     public function edit(Wallet $wallet): View

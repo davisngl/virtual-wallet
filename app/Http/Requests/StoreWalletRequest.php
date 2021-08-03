@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AllowedCurrency;
 use App\Rules\UniqueCurrencyWalletForUser;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +27,7 @@ class StoreWalletRequest extends FormRequest
     {
         return [
             'name'     => 'required|min:3|unique:wallets,name',
-            'currency' => ['required', 'min:3', new UniqueCurrencyWalletForUser]
+            'currency' => ['required', 'min:3', new AllowedCurrency, new UniqueCurrencyWalletForUser]
         ];
     }
 }

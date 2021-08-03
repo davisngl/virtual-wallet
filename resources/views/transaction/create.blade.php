@@ -16,7 +16,8 @@
                         <div class="w-3/4 flex flex-row justify-between mb-5 space-x-2">
                             <div class="col-span-6 sm:col-span-3 w-1/2">
                                 <label for="amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                                <input type="text"
+                                <input type="number"
+                                       min="0"
                                        name="amount"
                                        id="amount"
                                        class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -28,8 +29,8 @@
                             <div class="col-span-6 sm:col-span-4 w-1/2">
                                 <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
                                 <select name="type" id="type">
-                                    <option value="deposit" selected>Deposit</option>
-                                    <option value="withdraw">Withdraw</option>
+                                    <option value="deposit" {{ old('type') === 'deposit' ? 'selected' : '' }}>Deposit</option>
+                                    <option value="withdraw" {{ old('type') === 'withdraw' ? 'selected' : '' }}>Withdraw</option>
                                 </select>
                                 @error('currency')<p class="text-red-600">{{ $message }}</p>@enderror
                             </div>

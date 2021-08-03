@@ -1,63 +1,26 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Virtual Wallet
+Test task for ViaSMS
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Installation steps
+// TODO
 
-## About Laravel
+## Ideas and justifications for further on development
+Some justifications are made just because it didn't seem like the best use of time, therefore I state it in text as in "I understand I **have** to do this, but there's not so much time as you are waiting to review code".
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# virtual-wallet
+- If there was an API for sending money between users, I would've made an abstraction on top of existing `withdraw` method so that I can send the money to other user, something like `$user->depositTo($otherUser)`, but that would involve some magic which could be appropriate (seeing if that other user has specific currency wallet, if not - convert it to his default wallet currency (doesn't really make sense to show exception that other user has no specific wallet for that, customer might think "then why can't you convert it?!"). Not only that, transaction should show to which wallet it went (unique wallet ID, maybe).
+- Not sure if it makes sense to delete a transaction from wallet without other side-effects - if I delete a transaction, it may introduce inconsistencies in payment audit (where audit could just be the transaction history for admin to check if there's no "fishy business" going on). Essentially, some money appear in this and that wallet without a trace. What do we do when transaction gets deleted? I think it would make sense to mark it as "fraudulent" (soft-delete in a way) and then other proceedings can happen based on that.
+- Of course, there would also be DB audit (every action logged) that would indicate deleted transactions, but that really should be the last resort. Ideally would handle it on back-end application level.
+- To show any kind of lists, there should be pagination available and ability to sort/search for records. That could be achieved with data-tables (for example, [Laravel Data Tables by yajra](https://github.com/yajra/laravel-datatables), which include all the basic operations needed for proper resource list. That's pretty much outside of the scope of the user stories and project overall.
+- Maybe the need for specific methods to scope the search for transactions by user (might be beneficial)
+- Builder for wallet could be appropriate since it could take more steps than just giving the wallet a name, currency it handles and for which user it is. Just for this trivial example I want that to be easily extensible later on.
+- Some methods have return type that includes parent model "Model". That's only due to the fact that I am yet to find a better way to avoid squiggly lines that PHPStorm throws by saying that `->create()` method (through relationship) returns `Model` instance, rather than the real model we are expecting.
+- I started with making each feature in it's own branch (as I usually do), then merge into development, when the feature seems ok and later on to main. After setting up authentication branch, I decided to just push up to development, to save time. Just to clarify - for me it's 1 feature = 1 branch, for this test I want to speed up the development part.
+- I would prefer squashing the merged commits, but I rather make it easier for you to see git history rather than using reflog.
+- Transactions should have default state of validating, in my opinion. But for the simplicity, decided to only go for 2 states: "ok" and "fraudulent". By default just they are all "ok" (bad practice for fintech, most likely).
+- It may be a better idea to return transaction data from `$wallet->deposit(10)` rather than bool, but I wanted it to be a side-effect, for example, not only does transaction gets created, but also some external API calls happen or similar, also so that we can hook into event that's happening on system and handle it with additional actions if necessary.
+- Deposits and transactions *have* to be in DB transactions since if there were more operations done with deposit/withdraw, it will introduce instability/discrepancies in transaction/overall audit. If something from everything fails there, every change has to be rolled back.
+- Shortened transaction routes have to also include either validation which checks if the transaction belongs to the wallet (and user). Those URL's are shortened to make up for simpler controller methods + to avoid having unused parameters.
+- Listener `ValidateWalletAmount` should be refactored to only pluck out amounts rather than using the whole hydrated models to do wallet amount recalculation.
+- To me it seems that when transaction gets deleted, amount should stay the same, since it's pretty much just an audit item showing that transaction happened - it shouldn't affect the amount IF it transaction is deleted. Though, the transactions are kept as for validating wallet amount (easier than making an observer for it). Not sure what's the procedure normally when it comes to fraudulent payments.
+- Many more scenarios could be tested to fail the validation unexpectedly, but that would require a lot of time. In such case I would utilize data providers for PHPUnit to quickly run through potentially "quirky" values that could get provided.
+- Some sort of caching should be required for transactions and wallets as per normal user those might not change as often. Cache could be busted either on interval, or when update happens (could be achieved through scheduled jobs and with observers, respectively).

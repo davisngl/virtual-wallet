@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreWalletRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class WalletController extends Controller
@@ -9,7 +11,7 @@ class WalletController extends Controller
     public function index(): View
     {
         return view('wallet.index', [
-            'wallets' => auth()->user()->wallets
+            'wallets' => auth()->user()->wallets()->latest()->get()
         ]);
     }
 
@@ -18,12 +20,12 @@ class WalletController extends Controller
         return view('wallet.create');
     }
 
-    public function store(StoreWalletRequest $request): View
+    public function store(StoreWalletRequest $request): RedirectResponse
     {
-        // TODO implement...
+        auth()->user()->wallets()->create($request->validated());
 
-        return view('wallet.index', [
-            'wallets' => auth()->user()->wallets
-        ]);
+        session()->flash('success', 'Wallet successfully created!');
+
+        return redirect(route('wallet.index'));
     }
 }

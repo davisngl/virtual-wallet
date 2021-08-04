@@ -1,8 +1,11 @@
 # Virtual Wallet
-Test task for ViaSMS
+Test task for VIASMS
 
-## Installation steps
-// TODO
+## Installation
+Project uses PHP 8.0
+
+Clone the repository, copy .env.example to .env, enter your local DB credentials, migrate the database. Setup as per usual Laravel project.
+If any questions, please ask.
 
 ## Ideas and justifications for further on development
 Some justifications are made just because it didn't seem like the best use of time, therefore I state it in text as in "I understand I **have** to do this, but there's not so much time as you are waiting to review code".
@@ -24,3 +27,4 @@ Some justifications are made just because it didn't seem like the best use of ti
 - Many more scenarios could be tested to fail the validation unexpectedly, but that would require a lot of time. In such case I would utilize data providers for PHPUnit to quickly run through potentially "quirky" values that could get provided from user (which could go as far as mutation testing).
 - Some sort of caching should be required for transactions and wallets as per normal user those might not change as often. Cache could be busted either on interval, or when update happens (could be achieved through scheduled jobs and with observers, respectively).
 - Currently, there are uncaught exceptions. Normally it would depend on what gets done in such a system after either deposit or withdraw fails. Just logging the exception after catching it in try/catch does seem more like a visual debt here (of course, only in this context of a test task). It really depends on what you decide to do with exception.
+- Not using factories since you should go through the flow yourself to see how things work rather than having data pre-filled with factories.

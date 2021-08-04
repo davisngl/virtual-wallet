@@ -20,7 +20,7 @@ class HasSufficientFunds implements Rule
     public function __construct(Wallet $wallet, string $type)
     {
         $this->wallet = $wallet;
-        $this->type = $type ?? Transaction::TYPE_WITHDRAW;
+        $this->type = $type;
     }
 
     /**

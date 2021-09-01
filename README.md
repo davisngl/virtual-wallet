@@ -1,5 +1,5 @@
 # Virtual Wallet
-Test task for VIASMS
+Test task for VIA SMS.
 
 ## Installation
 Project uses PHP 8.0
